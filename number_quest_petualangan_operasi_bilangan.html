@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUMBER QUEST: Petualangan Operasi Bilangan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2563eb',
+                            purple: '#7c3aed',
+                            pink: '#db2777',
+                            orange: '#ea580c',
+                            emerald: '#059669',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .font-display {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-bounce {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .pulse-slow {
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.8);
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4 md:p-6 min-h-screen flex items-center justify-center">
+
+    <div id="app" class="w-full max-w-5xl mx-auto">
+        
+        <!-- TOP NAVBAR / HEADER -->
+        <header class="flex justify-between items-center mb-4 p-3 sm:p-4 glass-card rounded-2xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-purple-500/30">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 class="font-display text-lg sm:text-xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400">NUMBER QUEST</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Matematika SMP Kelas VIII / Fase D</p>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="flex items-center gap-2">
+                <button id="soundToggle" onclick="toggleAudio()" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-yellow-400 hover:bg-slate-700/50 transition">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+                <button onclick="openTeacherDashboard()" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-purple-900/50 hover:bg-purple-800/60 border border-purple-500/30 text-purple-200 flex items-center gap-2">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span class="hidden sm:inline">Mode Guru</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: WELCOME / START SCREEN -->
+        <div id="welcomeScreen" class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-pink-500/20 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-widest mb-4">
+                    Game Edukasi Interaktif TPACK
+                </span>
+                
+                <h1 class="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold text-white mb-3 tracking-wide">
+                    NUMBER QUEST
+                </h1>
+                <h2 class="text-lg sm:text-xl md:text-2xl font-medium text-purple-200 mb-6 max-w-2xl mx-auto">
+                    PETUALANGAN OPERASI BILANGAN
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
+                    Taklukkan Tantangan Bilangan, Kuasai Operasi Hitung, dan Raih Gelar <span class="text-amber-400 font-bold">MASTER NUMERASI!</span>
+                </p>
+
+                <!-- INPUT NAMA PEMAIN -->
+                <div class="max-w-md mx-auto mb-8 text-left">
+                    <label for="playerNameInput" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Nama Pemain / Siswa:</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user-astronaut absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 text-lg"></i>
+                        <input type="text" id="playerNameInput" placeholder="Masukkan nama kamu..." class="w-full pl-12 pr-4 py-3.5 bg-slate-900/80 border border-purple-500/40 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/30 font-semibold text-lg">
+                    </div>
+                </div>
+
+                <!-- MAIN BUTTONS -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+                    <button onclick="startGame()" class="btn-bounce w-full sm:w-auto flex-1 py-4 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-lg shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-play text-xl"></i>
+                        <span>MULAI PETUALANGAN</span>
+                    </button>
+                </div>
+
+                <!-- AUXILIARY BUTTONS -->
+                <div class="flex items-center justify-center gap-4 mt-6">
+                    <button onclick="openInstructionsModal()" class="px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-semibold flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-circle-info text-blue-400"></i>
+                        <span>Petunjuk Play</span>
+                    </button>
+                    <button onclick="openAboutModal()" class="px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-semibold flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-graduation-cap text-purple-400"></i>
+                        <span>Tentang Game</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY SCREEN -->
+        <div id="gameplayScreen" class="hidden space-y-4">
+            
+            <!-- HUD / STATUS BAR -->
+            <div class="glass-card rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 items-center text-center">
+                
+                <!-- Player Name & Level -->
+                <div class="col-span-2 sm:col-span-2 text-left flex items-center gap-3 border-r border-slate-700/50 pr-2">
+                    <div class="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 font-bold">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <div id="hudPlayerName" class="font-bold text-white text-sm truncate">Pemain</div>
+                        <div id="hudLevelBadge" class="text-xs text-amber-400 font-semibold truncate">Level 1 — Penjelajah</div>
+                    </div>
+                </div>
+
+                <!-- Lives -->
+                <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+                    <div class="text-[10px] uppercase text-slate-400 font-bold">Nyawa</div>
+                    <div id="hudLives" class="flex justify-center gap-1 mt-1 text-red-500 text-base">
+                        <i class="fa-solid fa-heart"></i>
+                        <i class="fa-solid fa-heart"></i>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+
+                <!-- Score -->
+                <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+                    <div class="text-[10px] uppercase text-slate-400 font-bold">Skor</div>
+                    <div id="hudScore" class="font-display font-bold text-amber-400 text-lg">0</div>
+                </div>
+
+                <!-- Question Progress -->
+                <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+                    <div class="text-[10px] uppercase text-slate-400 font-bold">Soal</div>
+                    <div id="hudQuestionNumber" class="font-bold text-blue-400 text-base">1/5</div>
+                </div>
+
+                <!-- Timer -->
+                <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-800 relative overflow-hidden">
+                    <div class="text-[10px] uppercase text-slate-400 font-bold">Waktu</div>
+                    <div id="hudTimer" class="font-display font-bold text-emerald-400 text-lg">30s</div>
+                </div>
+            </div>
+
+            <!-- LEVEL PROGRESS BAR -->
+            <div class="w-full bg-slate-900/80 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                <div id="levelProgressBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 w-0"></div>
+            </div>
+
+            <!-- QUESTION CARD -->
+            <div class="glass-card rounded-3xl p-5 sm:p-8 relative">
+                
+                <!-- Question Top Metadata -->
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700/50">
+                    <span id="questionTypeBadge" class="px-3 py-1 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold uppercase tracking-wider">
+                        Pilihan Ganda
+                    </span>
+                    <button id="hintBtn" onclick="useHint()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Petunjuk Hint</span>
+                    </button>
+                </div>
+
+                <!-- Question Text -->
+                <div id="questionContainer" class="mb-6">
+                    <h3 id="questionText" class="text-lg sm:text-xl md:text-2xl font-semibold text-white leading-relaxed">
+                        Memuat soal...
+                    </h3>
+                </div>
+
+                <!-- Hint Banner (Hidden by default) -->
+                <div id="hintBox" class="hidden mb-6 p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-sm flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-400 text-lg mt-0.5"></i>
+                    <div>
+                        <span class="font-bold">PETUNJUK HINT:</span>
+                        <span id="hintText">...</span>
+                    </div>
+                </div>
+
+                <!-- Answer Options Area -->
+                <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Dynamic Answer Options inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 1: FEEDBACK MODAL (Formatted for Edu Formative Assessment) -->
+        <div id="feedbackModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+            <div class="glass-card max-w-lg w-full rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-2xl relative animate-bounce-short">
+                
+                <div id="feedbackHeader" class="text-center mb-4">
+                    <div id="feedbackIcon" class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h3 id="feedbackTitle" class="font-display text-2xl font-bold text-white">BENAR!</h3>
+                    <p id="feedbackSubtitle" class="text-sm text-slate-300">Hebat! Strategimu tepat.</p>
+                </div>
+
+                <!-- Detailed Explanation (TPACK Content Knowledge) -->
+                <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 mb-6 text-sm space-y-2">
+                    <div class="text-xs font-bold uppercase tracking-wider text-purple-400 mb-1">
+                        <i class="fa-solid fa-book-open mr-1"></i> Pembahasan & Konsep Matematika:
+                    </div>
+                    <div id="feedbackExplanation" class="text-slate-200 leading-relaxed font-normal">
+                        ...
+                    </div>
+                </div>
+
+                <button onclick="nextQuestion()" class="btn-bounce w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-base shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
+                    <span>Lanjutkan Petualangan</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: FINAL RESULT & REFLECTION SCREEN -->
+        <div id="resultScreen" class="hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+                
+                <span class="px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold uppercase tracking-widest inline-block mb-3">
+                    Petualangan Selesai
+                </span>
+
+                <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mb-2">HASIL AKHIR & PREDIKAT</h2>
+                <p id="resultPlayerName" class="text-purple-300 font-semibold text-lg mb-6">Selamat, Pemain!</p>
+
+                <!-- Predicate Badge Card -->
+                <div class="max-w-md mx-auto bg-gradient-to-br from-purple-900/60 to-slate-900/90 rounded-3xl p-6 border border-purple-500/40 mb-8 shadow-xl">
+                    <div class="text-xs uppercase font-bold text-purple-300 tracking-wider mb-2">Gelar Numerasi Yang Diraih:</div>
+                    <div id="resultPredicate" class="font-display text-2xl sm:text-3xl font-bold text-amber-400 mb-2">
+                        MASTER NUMERASI
+                    </div>
+                    <p id="resultMotivation" class="text-xs sm:text-sm text-slate-300 italic">
+                        "Luar biasa! Pemahaman konsep operasi bilanganmu sangat tangguh!"
+                    </p>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8 text-center">
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-1">Skor Akhir</div>
+                        <div id="resultScore" class="font-display text-2xl font-bold text-amber-400">0</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-1">Akurasi</div>
+                        <div id="resultAccuracy" class="font-display text-2xl font-bold text-emerald-400">0%</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-1">Benar / Salah</div>
+                        <div id="resultCorrectWrong" class="font-display text-lg font-bold text-blue-300 mt-1">0 / 0</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-1">Max Streak</div>
+                        <div id="resultStreak" class="font-display text-2xl font-bold text-pink-400">0</div>
+                    </div>
+                </div>
+
+                <!-- REFLECTION FORM (Pedagogical Metacognition) -->
+                <div class="max-w-2xl mx-auto text-left bg-slate-900/80 rounded-2xl p-6 border border-slate-800 mb-8">
+                    <h3 class="font-display text-lg font-bold text-purple-300 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-purple-400"></i>
+                        <span>Refleksi Pembelajaran Siswa</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Luangkan waktu sejenak untuk merefleksikan pengalaman belajarmu:</p>
+
+                    <form id="reflectionForm" onsubmit="saveReflection(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">1. Konsep operasi bilangan mana yang paling kamu pahami?</label>
+                            <input type="text" id="refQ1" required placeholder="Contoh: Operasi perkalian pecahan dan desimal..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">2. Strategi atau trik apa yang kamu gunakan saat menyelesaikan soal?</label>
+                            <input type="text" id="refQ2" required placeholder="Contoh: Menyamakan penyebut dulu / mengubah pecahan ke desimal..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">3. Bagian atau topik mana yang menurutmu masih sulit dan perlu dilatih lagi?</label>
+                            <input type="text" id="refQ3" required placeholder="Contoh: Soal cerita diskon gabungan dan sifat pangkat..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400">
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Refleksi Saya</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- REPLAY / RESTART BUTTONS -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+                    <button onclick="restartGame()" class="btn-bounce flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-base shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Main Lagi</span>
+                    </button>
+                    <button onclick="showWelcomeScreen()" class="btn-bounce flex-1 py-3.5 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-base flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Menu Utama</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SCREEN 4: TEACHER ANALYTICS DASHBOARD -->
+        <div id="teacherScreen" class="hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 sm:p-8">
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-700">
+                    <div>
+                        <span class="px-3 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold uppercase">
+                            Dasbor Analitik TPACK
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">MODE GURU & REKAP KELAS</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="resetTeacherData()" class="px-3 py-2 rounded-xl bg-red-900/50 hover:bg-red-800 text-red-200 border border-red-500/30 text-xs font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>Reset Data Kelas</span>
+                        </button>
+                        <button onclick="showWelcomeScreen()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Tutup</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aggregate Statistics Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase">Total Siswa</div>
+                        <div id="tdTotalPlayers" class="font-display text-2xl font-bold text-blue-400 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase">Rata-rata Skor</div>
+                        <div id="tdAvgScore" class="font-display text-2xl font-bold text-amber-400 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase">Rata-rata Akurasi</div>
+                        <div id="tdAvgAccuracy" class="font-display text-2xl font-bold text-emerald-400 mt-1">0%</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-bold uppercase">Mastery Level</div>
+                        <div id="tdMastery" class="font-display text-2xl font-bold text-purple-400 mt-1">0%</div>
+                    </div>
+                </div>
+
+                <!-- Player Record Table -->
+                <div class="mb-6">
+                    <h3 class="font-display text-lg font-bold text-white mb-3">Daftar Hasil & Refleksi Siswa</h3>
+                    <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900 text-xs uppercase text-slate-400 font-bold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Nama</th>
+                                    <th class="p-3">Skor</th>
+                                    <th class="p-3">Akurasi</th>
+                                    <th class="p-3">Predikat</th>
+                                    <th class="p-3">Refleksi (Konsep Dipahami / Kesulitan)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tdTableBody" class="divide-y divide-slate-800/60 bg-slate-950/40">
+                                <tr>
+                                    <td colspan="5" class="p-4 text-center text-slate-500 italic">Belum ada data permainan tersimpan.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- INSTRUCTIONS MODAL -->
+        <div id="instructionsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+            <div class="glass-card max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 max-h-[85vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700">
+                    <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-400"></i>
+                        <span>Petunjuk Play & Aturan Game</span>
+                    </h3>
+                    <button onclick="closeInstructionsModal()" class="text-slate-400 hover:text-white text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4 text-sm text-slate-300">
+                    <div>
+                        <h4 class="font-bold text-purple-300 mb-1">🎯 Aturan & Gameplay:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs sm:text-sm">
+                            <li>Terdapat <span class="text-white font-bold">5 Level</span> dengan total <span class="text-white font-bold">25 Soal</span> bertahap.</li>
+                            <li>Waktu per soal: <span class="text-amber-400 font-bold">30 detik</span>.</li>
+                            <li>Kamu memiliki <span class="text-red-400 font-bold">3 Nyawa</span>. Jawaban salah mengurangi 1 nyawa.</li>
+                            <li>Jawaban Benar: <span class="text-emerald-400 font-bold">+100 Poin</span>. Tidak ada poin minus.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-purple-300 mb-1">🔥 Bonus Multiplier Streak:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs sm:text-sm">
+                            <li>3x Benar berturut-turut: <span class="text-amber-400 font-bold">+50 Bonus Poin</span></li>
+                            <li>5x Benar berturut-turut: <span class="text-amber-400 font-bold">+100 Bonus Poin</span></li>
+                            <li>Lulus Level tanpa kesalahan: <span class="text-emerald-400 font-bold">+200 Bonus Poin</span></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-purple-300 mb-1">💡 Fitur Hint & Pembahasan:</h4>
+                        <p class="text-xs sm:text-sm">Gunakan tombol Hint jika mengalami kesulitan. Menggunakan hint membatalkan bonus streak pada soal tersebut, namun tetap memperoleh skor penuh jika jawaban benar!</p>
+                    </div>
+                </div>
+
+                <button onclick="closeInstructionsModal()" class="w-full mt-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm">
+                    Mengerti, Siap Bermain!
+                </button>
+            </div>
+        </div>
+
+        <!-- ABOUT GAME MODAL (TPACK Context) -->
+        <div id="aboutModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+            <div class="glass-card max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700">
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700">
+                    <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-purple-400"></i>
+                        <span>Landasan Pembelajaran TPACK</span>
+                    </h3>
+                    <button onclick="closeAboutModal()" class="text-slate-400 hover:text-white text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    <p><strong class="text-purple-300">Content Knowledge (CK):</strong> Mencakup CP Matematika Fase D / Kelas VIII SMP untuk topik Operasi Bilangan Bulat, Pecahan, Desimal, Persen, Pangkat Bulat, dan Soal Cerita Kontekstual.</p>
+                    <p><strong class="text-purple-300">Pedagogical Knowledge (PK):</strong> Mengintegrasikan *game-based learning*, scaffolding melalui hint, umpan balik formatif langsung, dan refleksi metakognitif di akhir sesi.</p>
+                    <p><strong class="text-purple-300">Technological Knowledge (TK):</strong> Aplikasi web offline murni, synthesizer audio Web Audio API, *responsive design* untuk Interactive Flat Panel (IFP), dan analitik lokal browser.</p>
+                </div>
+
+                <button onclick="closeAboutModal()" class="w-full mt-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm">
+                    Tutup Information
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* Web Audio API Audio Synthesizer (No external audio file dependencies) */
+        let audioCtx = null;
+        let isMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.setValueAtTime(164.81, now + 0.15); // E3
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'complete') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                }
+            } catch(e) {
+                console.log("Audio play context error:", e);
+            }
+        }
+
+        function toggleAudio() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('soundIcon');
+            if (isMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-lg text-slate-500';
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-lg text-yellow-400';
+                playSound('click');
+            }
+        }
+
+        const questionBank = [
+            // LEVEL 1: BILANGAN BULAT (Soal 1-5)
+            {
+                level: 1,
+                levelName: "Penjelajah Bilangan",
+                type: "Pilihan Ganda",
+                question: "Hasil dari (-8) + 15 - 6 adalah...",
+                options: ["-29", "1", "11", "29"],
+                answer: "1",
+                hint: "Selesaikan operasi dari kiri ke kanan: hitung (-8) + 15 dulu, kemudian kurangi 6.",
+                explanation: "Langkah penyelesaian:<br>1) (-8) + 15 = 7<br>2) 7 - 6 = 1<br>Jadi, hasil akhirnya adalah <b>1</b>."
+            },
+            {
+                level: 1,
+                levelName: "Penjelajah Bilangan",
+                type: "Pilihan Ganda",
+                question: "Hasil perkalian (-12) × (-5) adalah...",
+                options: ["-60", "60", "-17", "17"],
+                answer: "60",
+                hint: "Ingat sifat operasi perkalian: perkalian dua bilangan negatif selalu menghasilkan bilangan positif.",
+                explanation: "Sifat matematika: Negatif × Negatif = Positif.<br>Maka (-12) × (-5) = <b>60</b>."
+            },
+            {
+                level: 1,
+                levelName: "Penjelajah Bilangan",
+                type: "Pilihan Ganda",
+                question: "Suhu udara di puncak gunung pada malam hari adalah -4°C. Pada siang hari suhu naik 11°C. Berapakah suhu udara pada siang hari?",
+                options: ["-15°C", "7°C", "-7°C", "15°C"],
+                answer: "7°C",
+                hint: "Kata 'naik' berarti ditambahkan (+). Hitung (-4) + 11.",
+                explanation: "Suhu awal = -4°C. Kenaikan suhu = +11°C.<br>Suhu siang = (-4) + 11 = <b>7°C</b>."
+            },
+            {
+                level: 1,
+                levelName: "Penjelajah Bilangan",
+                type: "Benar / Salah",
+                question: "Apakah pernyataan ini BENAR atau SALAH?\n'Hasil dari (-20) ÷ 4 + (-3) adalah -8.'",
+                options: ["BENAR", "SALAH"],
+                answer: "BENAR",
+                hint: "Utamakan pembagian terlebih dahulu: (-20) ÷ 4, lalu tambahkan (-3).",
+                explanation: "1) Pembagian lebih kuat: (-20) ÷ 4 = -5.<br>2) Penjumlahan: (-5) + (-3) = -8.<br>Pernyataan tersebut <b>BENAR</b>."
+            },
+            {
+                level: 1,
+                levelName: "Penjelajah Bilangan",
+                type: "Pilihan Ganda",
+                question: "Hasil dari 18 - 3 × (-4) adalah...",
+                options: ["-60", "30", "-6", "24"],
+                answer: "30",
+                hint: "Kerjakan perkalian 3 × (-4) terlebih dahulu sebelum dikurangi dari 18.",
+                explanation: "1) Perkalian: 3 × (-4) = -12.<br>2) Pengurangan: 18 - (-12) = 18 + 12 = <b>30</b>."
+            },
+
+            // LEVEL 2: PECAHAN (Soal 6-10)
+            {
+                level: 2,
+                levelName: "Ahli Pecahan",
+                type: "Pilihan Ganda",
+                question: "Hasil penjumlahan dari 3/4 + 2/3 adalah...",
+                options: ["5/7", "13/12", "6/12", "1 1/4"],
+                answer: "13/12",
+                hint: "Samakan penyebut kedua pecahan dengan mencari KPK dari 4 dan 3 (yaitu 12).",
+                explanation: "1) Samakan penyebut ke 12:<br>3/4 = 9/12<br>2/3 = 8/12<br>2) Jumlahkan pembilang: 9/12 + 8/12 = <b>13/12</b> (atau 1 1/12)."
+            },
+            {
+                level: 2,
+                levelName: "Ahli Pecahan",
+                type: "Pilihan Ganda",
+                question: "Hasil pengurangan dari 5/6 - 1/4 adalah...",
+                options: ["4/2", "7/12", "1/3", "4/12"],
+                answer: "7/12",
+                hint: "KPK dari penyebut 6 dan 4 adalah 12. Ubah kedua pecahan ke penyebut 12.",
+                explanation: "5/6 = 10/12<br>1/4 = 3/12<br>10/12 - 3/12 = <b>7/12</b>."
+            },
+            {
+                level: 2,
+                levelName: "Ahli Pecahan",
+                type: "Pilihan Ganda",
+                question: "Hasil dari perkalian 2/5 × 15/8 dalam bentuk paling sederhana adalah...",
+                options: ["3/4", "30/40", "3/5", "1/4"],
+                answer: "3/4",
+                hint: "Kalikan pembilang dengan pembilang (2×15) dan penyebut dengan penyebut (5×8), lalu sederhanakan.",
+                explanation: "(2 × 15) / (5 × 8) = 30 / 40.<br>Sederhanakan dengan membagi pembilang dan penyebut dengan 10: 30/40 = <b>3/4</b>."
+            },
+            {
+                level: 2,
+                levelName: "Ahli Pecahan",
+                type: "Pilihan Ganda",
+                question: "Berapakah hasil pembagian 3/4 ÷ 1/2 ?",
+                options: ["3/8", "1 1/2", "2/3", "3/2"],
+                answer: "1 1/2",
+                hint: "Pembagian pecahan sama dengan mengalikan pecahan pertama dengan kebalikan pecahan kedua (3/4 × 2/1).",
+                explanation: "3/4 ÷ 1/2 = 3/4 × 2/1 = 6/4 = 3/2 = <b>1 1/2</b>."
+            },
+            {
+                level: 2,
+                levelName: "Ahli Pecahan",
+                type: "Benar / Salah",
+                question: "Apakah BENAR atau SALAH bahwa pecahan 18/24 jika disederhanakan menjadi 3/4 ?",
+                options: ["BENAR", "SALAH"],
+                answer: "BENAR",
+                hint: "Bagi pembilang (18) dan penyebut (24) dengan FPB-nya yaitu 6.",
+                explanation: "18 ÷ 6 = 3, dan 24 ÷ 6 = 4. Jadi bentuk sederhananya adalah 3/4 (Pernyataan <b>BENAR</b>)."
+            },
+
+            // LEVEL 3: DESIMAL & PERSEN (Soal 11-15)
+            {
+                level: 3,
+                levelName: "Master Desimal & Persen",
+                type: "Pilihan Ganda",
+                question: "Hasil penjumlahan desimal 2,45 + 3,8 adalah...",
+                options: ["6,25", "5,25", "6,15", "5,85"],
+                answer: "6,25",
+                hint: "Luruskan tanda koma desimal sebelum menjumlahkan: 2,45 + 3,80.",
+                explanation: " 2,45<br>+ 3,80<br>------<br>= <b>6,25</b>."
+            },
+            {
+                level: 3,
+                levelName: "Master Desimal & Persen",
+                type: "Pilihan Ganda",
+                question: "Bentuk persen dari pecahan 3/5 adalah...",
+                options: ["30%", "40%", "60%", "75%"],
+                answer: "60%",
+                hint: "Kalikan pecahan 3/5 dengan 100%.",
+                explanation: "3/5 × 100% = (3 × 100) / 5 = 300 / 5 = <b>60%</b>."
+            },
+            {
+                level: 3,
+                levelName: "Master Desimal & Persen",
+                type: "Pilihan Ganda",
+                question: "Harga sebuah buku Rp80.000 mendapat diskon 25%. Berapakah harga setelah diskon?",
+                options: ["Rp20.000", "Rp55.000", "Rp60.000", "Rp75.000"],
+                answer: "Rp60.000",
+                hint: "Hitung nilai diskon (25/100 × Rp80.000), lalu kurangkan dari harga awal.",
+                explanation: "1) Besar Diskon = 25% × Rp80.000 = Rp20.000.<br>2) Harga Bayar = Rp80.000 - Rp20.000 = <b>Rp60.000</b>."
+            },
+            {
+                level: 3,
+                levelName: "Master Desimal & Persen",
+                type: "Pilihan Ganda",
+                question: "Hasil dari 0,6 × 0,15 adalah...",
+                options: ["0,09", "0,9", "0,009", "0,19"],
+                answer: "0,09",
+                hint: "Kalikan 6 × 15 = 90. Jumlahkan total angka di belakang koma (1 + 2 = 3 angka desimal).",
+                explanation: "6 × 15 = 90. Karena ada total 3 digit di belakang koma, hasilnya adalah 0,090 = <b>0,09</b>."
+            },
+            {
+                level: 3,
+                levelName: "Master Desimal & Persen",
+                type: "Benar / Salah",
+                question: "Apakah BENAR atau SALAH bahwa 0,75 sama nilainya dengan 75% dan 3/4 ?",
+                options: ["BENAR", "SALAH"],
+                answer: "BENAR",
+                hint: "0,75 = 75/100 = 75%. Jika disederhanakan 75/100 = 3/4.",
+                explanation: "0,75 = 75/100 = 75%. Sederhananya 75/100 ÷ 25 = 3/4. Pernyataan <b>BENAR</b>."
+            },
+
+            // LEVEL 4: BILANGAN BERPANGKAT BULAT (Soal 16-20)
+            {
+                level: 4,
+                levelName: "Penguasa Pangkat",
+                type: "Pilihan Ganda",
+                question: "Hasil dari 2³ × 2² adalah...",
+                options: ["16", "32", "64", "128"],
+                answer: "32",
+                hint: "Gunakan sifat perkalian pangkat berpangkalan sama: aᵐ × aⁿ = aᵐ⁺ⁿ.",
+                explanation: "2³ × 2² = 2³⁺² = 2⁵ = 2 × 2 × 2 × 2 × 2 = <b>32</b>."
+            },
+            {
+                level: 4,
+                levelName: "Penguasa Pangkat",
+                type: "Pilihan Ganda",
+                question: "Hasil dari 5⁴ ÷ 5² adalah...",
+                options: ["5", "10", "25", "125"],
+                answer: "25",
+                hint: "Gunakan sifat pembagian pangkat berpangkalan sama: aᵐ ÷ aⁿ = aᵐ⁻ⁿ.",
+                explanation: "5⁴ ÷ 5² = 5⁴⁻² = 5² = 5 × 5 = <b>25</b>."
+            },
+            {
+                level: 4,
+                levelName: "Penguasa Pangkat",
+                type: "Pilihan Ganda",
+                question: "Berapakah nilai dari (3²)³ ?",
+                options: ["243", "729", "81", "18"],
+                answer: "729",
+                hint: "Gunakan sifat perpangkatan berpangkat: (aᵐ)ⁿ = aᵐⁿ.",
+                explanation: "(3²)³ = 3²ˣ³ = 3⁶ = 729."
+            },
+            {
+                level: 4,
+                levelName: "Penguasa Pangkat",
+                type: "Pilihan Ganda",
+                question: "Nilai dari 2⁻³ (pangkat negatif) adalah...",
+                options: ["-8", "-6", "1/8", "1/6"],
+                answer: "1/8",
+                hint: "Sifat pangkat negatif: a⁻ⁿ = 1 / (aⁿ).",
+                explanation: "2⁻³ = 1 / (2³) = 1 / 8 = <b>1/8</b>."
+            },
+            {
+                level: 4,
+                levelName: "Penguasa Pangkat",
+                type: "Benar / Salah",
+                question: "Apakah BENAR atau SALAH bahwa nilai dari bilangan berpangkat 10⁰ adalah 1 ?",
+                options: ["BENAR", "SALAH"],
+                answer: "BENAR",
+                hint: "Ingat sifat khusus pangkat nol: setiap bilangan tak nol dipangkatkan 0 nilainya adalah 1.",
+                explanation: "Sifat utama eksponen: a⁰ = 1 untuk setiap a ≠ 0. Jadi 10⁰ = 1 (Pernyataan <b>BENAR</b>)."
+            },
+
+            // LEVEL 5: MISSION KEHIDUPAN NYATA (Soal 21-25)
+            {
+                level: 5,
+                levelName: "Mission: Kehidupan Nyata",
+                type: "Soal Cerita / Problem Solving",
+                question: "Budi memiliki uang Rp200.000. Ia menggunakan 35% uangnya untuk membeli buku pelajaran dan Rp45.000 untuk alat tulis. Berapakah sisa uang Budi?",
+                options: ["Rp85.000", "Rp70.000", "Rp115.000", "Rp95.000"],
+                answer: "Rp85.000",
+                hint: "Hitung uang belanja buku (35% × 200.000), tambahkan belanja alat tulis, lalu kurangkan dari 200.000.",
+                explanation: "1) Belanja Buku = 35/100 × 200.000 = Rp70.000.<br>2) Total Belanja = 70.000 + 45.000 = Rp115.000.<br>3) Sisa Uang = 200.000 - 115.000 = <b>Rp85.000</b>."
+            },
+            {
+                level: 5,
+                levelName: "Mission: Kehidupan Nyata",
+                type: "Soal Cerita / Problem Solving",
+                question: "Ibu membeli 2 1/2 kg gula pasir. Kemudian Ibu memakai 3/4 kg untuk membuat kue. Berapa kg sisa gula pasir Ibu?",
+                options: ["1 1/4 kg", "1 3/4 kg", "1 1/2 kg", "2 kg"],
+                answer: "1 3/4 kg",
+                hint: "Ubah campuran 2 1/2 menjadi pecahan biasa (5/2) atau desimal (2,5), lalu kurangi 3/4 (0,75).",
+                explanation: "2 1/2 = 2,5 kg.<br>3/4 = 0,75 kg.<br>Sisa = 2,5 - 0,75 = 1,75 kg = <b>1 3/4 kg</b>."
+            },
+            {
+                level: 5,
+                levelName: "Mission: Kehidupan Nyata",
+                type: "Soal Cerita / Problem Solving",
+                question: "Sebuah toko pakaian memberikan diskon ganda 20% + 10% untuk baju seharga Rp100.000. Berapakah harga akhir baju tersebut?",
+                options: ["Rp70.000", "Rp72.000", "Rp75.000", "Rp80.000"],
+                answer: "Rp72.000",
+                hint: "Hitung diskon pertama 20% dari 100.000. Lalu hitung diskon kedua 10% dari HARGA SETELAH diskon pertama.",
+                explanation: "1) Diskon pertama (20%): 100.000 - 20.000 = Rp80.000.<br>2) Diskon kedua (10% dari 80.000): 10% × 80.000 = Rp8.000.<br>3) Harga Akhir = 80.000 - 8.000 = <b>Rp72.000</b>."
+            },
+            {
+                level: 5,
+                levelName: "Mission: Kehidupan Nyata",
+                type: "Soal Cerita / Problem Solving",
+                question: "Dalam tes matematika berisi 20 soal: Benar dapat skor +5, Salah dapat -2, dan Tidak Dijawab 0. Jika Ani menjawab 15 benar, 3 salah, dan sisanya tidak dijawab, berapa total skor Ani?",
+                options: ["69", "75", "81", "65"],
+                answer: "69",
+                hint: "Hitung skor benar (15 × 5) dan kurangi dengan poin kesalahan (3 × 2).",
+                explanation: "1) Skor Benar = 15 × 5 = 75.<br>2) Skor Salah = 3 × (-2) = -6.<br>3) Tidak Dijawab = 2 × 0 = 0.<br>Total Skor = 75 - 6 = <b>69</b>."
+            },
+            {
+                level: 5,
+                levelName: "Mission: Kehidupan Nyata",
+                type: "Soal Cerita / Problem Solving",
+                question: "Sebuah akuarium berbentuk kubus dengan panjang rusuk 2³ cm. Berapakah volume akuarium tersebut?",
+                options: ["64 cm³", "512 cm³", "256 cm³", "128 cm³"],
+                answer: "512 cm³",
+                hint: "Panjang rusuk s = 2³ = 8 cm. Volume kubus = s³ = 8³.",
+                explanation: "1) Rusuk s = 2³ = 8 cm.<br>2) Volume Kubus = s³ = 8³ = 8 × 8 × 8 = <b>512 cm³</b>."
+            }
+        ];
+
+        let gameState = {
+            playerName: "Pemain",
+            currentQuestions: [],
+            currentIndex: 0,
+            score: 0,
+            lives: 3,
+            timer: 30,
+            timerInterval: null,
+            streak: 0,
+            maxStreak: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            usedHint: false,
+            startTime: null,
+            totalTimePlayed: 0
+        };
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startGame() {
+            playSound('click');
+            const nameInput = document.getElementById('playerNameInput').value.trim();
+            if (!nameInput) {
+                alert("Silakan masukkan nama kamu terlebih dahulu untuk memulai petualangan!");
+                return;
+            }
+            gameState.playerName = nameInput;
+
+            // Reset Game State
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.currentIndex = 0;
+            gameState.streak = 0;
+            gameState.maxStreak = 0;
+            gameState.correctCount = 0;
+            gameState.wrongCount = 0;
+            gameState.startTime = new Date();
+
+            // Shuffle questions and options for replayability
+            gameState.currentQuestions = questionBank.map(q => {
+                const shuffledOpts = shuffleArray(q.options);
+                return {
+                    ...q,
+                    options: shuffledOpts
+                };
+            });
+
+            // Switch Screen View
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameplayScreen').classList.remove('hidden');
+
+            renderHUD();
+            loadQuestion();
+        }
+
+        function renderHUD() {
+            document.getElementById('hudPlayerName').innerText = gameState.playerName;
+            document.getElementById('hudScore').innerText = gameState.score;
+            document.getElementById('hudQuestionNumber').innerText = `${gameState.currentIndex + 1}/${gameState.currentQuestions.length}`;
+            
+            // Render Lives
+            let heartsHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < gameState.lives) {
+                    heartsHTML += '<i class="fa-solid fa-heart text-red-500"></i>';
+                } else {
+                    heartsHTML += '<i class="fa-solid fa-heart text-slate-700"></i>';
+                }
+            }
+            document.getElementById('hudLives').innerHTML = heartsHTML;
+
+            // Render Level Progress Bar
+            const progressPercent = ((gameState.currentIndex) / gameState.currentQuestions.length) * 100;
+            document.getElementById('levelProgressBar').style.width = `${progressPercent}%`;
+
+            // Current Level Name
+            const currentQ = gameState.currentQuestions[gameState.currentIndex];
+            if (currentQ) {
+                document.getElementById('hudLevelBadge').innerText = `Level ${currentQ.level} — ${currentQ.levelName}`;
+            }
+        }
+
+        function loadQuestion() {
+            if (gameState.currentIndex >= gameState.currentQuestions.length) {
+                finishGame();
+                return;
+            }
+
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            gameState.usedHint = false;
+
+            // Reset UI States
+            document.getElementById('hintBox').classList.add('hidden');
+            document.getElementById('questionTypeBadge').innerText = q.type;
+            document.getElementById('questionText').innerText = q.question;
+
+            // Render Answer Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-bounce w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-purple-900/40 border border-slate-700 hover:border-purple-500 text-left font-semibold text-white text-base transition flex items-center justify-between group";
+                btn.onclick = () => selectAnswer(opt);
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-slate-700 group-hover:bg-purple-600 text-slate-300 group-hover:text-white flex items-center justify-center font-bold text-sm">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span>${opt}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-purple-400"></i>
+                `;
+                container.appendChild(btn);
+            });
+
+            startTimer();
+            renderHUD();
+        }
+
+        function startTimer() {
+            clearInterval(gameState.timerInterval);
+            gameState.timer = 30;
+            document.getElementById('hudTimer').innerText = `${gameState.timer}s`;
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                document.getElementById('hudTimer').innerText = `${gameState.timer}s`;
+
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function useHint() {
+            playSound('click');
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            document.getElementById('hintText').innerText = q.hint;
+            document.getElementById('hintBox').classList.remove('hidden');
+            gameState.usedHint = true;
+        }
+
+        function handleTimeOut() {
+            playSound('wrong');
+            gameState.lives--;
+            gameState.wrongCount++;
+            gameState.streak = 0;
+
+            showFeedback(
+                false,
+                "WAKTU HABIS!",
+                `Waktu 30 detik telah selesai. Tetap semangat!<br><b>Jawaban yang benar: ${gameState.currentQuestions[gameState.currentIndex].answer}</b><br><br>${gameState.currentQuestions[gameState.currentIndex].explanation}`
+            );
+        }
+
+        function selectAnswer(selectedOpt) {
+            clearInterval(gameState.timerInterval);
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            const isCorrect = (selectedOpt === q.answer);
+
+            if (isCorrect) {
+                playSound('correct');
+                let earnedScore = 100;
+                gameState.streak++;
+                if (gameState.streak > gameState.maxStreak) gameState.maxStreak = gameState.streak;
+
+                // Streak Bonus Rules
+                let streakBonusMsg = "";
+                if (!gameState.usedHint) {
+                    if (gameState.streak === 3) {
+                        earnedScore += 50;
+                        streakBonusMsg = " 🔥 Bonus Streak 3x (+50 Poin)!";
+                    } else if (gameState.streak === 5) {
+                        earnedScore += 100;
+                        streakBonusMsg = " 🔥🔥 Super Streak 5x (+100 Poin)!";
+                    }
+                }
+
+                gameState.score += earnedScore;
+                gameState.correctCount++;
+
+                showFeedback(
+                    true,
+                    "JAWABAN BENAR!",
+                    `Hebat! Strategi matematika kamu sangat tepat.${streakBonusMsg}<br><br>${q.explanation}`
+                );
+            } else {
+                playSound('wrong');
+                gameState.lives--;
+                gameState.wrongCount++;
+                gameState.streak = 0;
+
+                showFeedback(
+                    false,
+                    "BELUM TEPAT!",
+                    `Jangan menyerah! Pelajari langkah penyelesaiannya:<br><b>Jawaban yang benar: ${q.answer}</b><br><br>${q.explanation}`
+                );
+            }
+        }
+
+        function showFeedback(isCorrect, title, exp) {
+            const modal = document.getElementById('feedbackModal');
+            const iconBox = document.getElementById('feedbackIcon');
+            const titleEl = document.getElementById('feedbackTitle');
+            const subEl = document.getElementById('feedbackSubtitle');
+            const expEl = document.getElementById('feedbackExplanation');
+
+            if (isCorrect) {
+                iconBox.className = "w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                iconBox.innerHTML = '<i class="fa-solid fa-check"></i>';
+                titleEl.className = "font-display text-2xl font-bold text-emerald-400";
+                titleEl.innerText = title;
+                subEl.innerText = "Jawabanmu tepat, tingkatkan terus prestasimu!";
+            } else {
+                iconBox.className = "w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 bg-red-500/20 text-red-400 border border-red-500/30";
+                iconBox.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                titleEl.className = "font-display text-2xl font-bold text-red-400";
+                titleEl.innerText = title;
+                subEl.innerText = "Tidak apa-apa, mari pelajari konsep pertimbangannya!";
+            }
+
+            expEl.innerHTML = exp;
+            modal.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            document.getElementById('feedbackModal').classList.add('hidden');
+
+            if (gameState.lives <= 0) {
+                alert("Petualangan belum berakhir! Nyawa kamu habis, namun kamu bisa mengulangi level ini untuk memperkuat strategi.");
+                restartGame();
+                return;
+            }
+
+            gameState.currentIndex++;
+            renderHUD();
+            loadQuestion();
+        }
+
+        function finishGame() {
+            playSound('complete');
+            clearInterval(gameState.timerInterval);
+
+            // Calculate played time
+            const endTime = new Date();
+            const timeDiffSec = Math.round((endTime - gameState.startTime) / 1000);
+            gameState.totalTimePlayed = timeDiffSec;
+
+            // Switch Screen
+            document.getElementById('gameplayScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const total = gameState.currentQuestions.length;
+            const accuracy = Math.round((gameState.correctCount / total) * 100);
+
+            document.getElementById('resultPlayerName').innerText = `Selamat, ${gameState.playerName}!`;
+            document.getElementById('resultScore').innerText = gameState.score;
+            document.getElementById('resultAccuracy').innerText = `${accuracy}%`;
+            document.getElementById('resultCorrectWrong').innerText = `${gameState.correctCount} / ${gameState.wrongCount}`;
+            document.getElementById('resultStreak').innerText = gameState.maxStreak;
+
+            // Predicate Logic
+            let predicate = "";
+            let motivation = "";
+
+            if (accuracy >= 90) {
+                predicate = "MASTER NUMERASI";
+                motivation = "Luar biasa! Kamu menguasai seluruh konsep operasi bilangan dengan sangat sempurna!";
+            } else if (accuracy >= 80) {
+                predicate = "AHLI OPERASI BILANGAN";
+                motivation = "Sangat Bagus! Kemampuan prosedur dan pemecahan masalahmu sudah sangat baik.";
+            } else if (accuracy >= 70) {
+                predicate = "PETUALANG NUMERASI";
+                motivation = "Bagus! Kamu sudah memahami sebagian besar materi. Terus tingkatkan ketelitian!";
+            } else if (accuracy >= 60) {
+                predicate = "PEMBELAJAR TANGGUH";
+                motivation = "Cukup baik! Berlatih lebih banyak lagi pada soal pecahan dan bilangan berpangkat.";
+            } else {
+                predicate = "TERUS BERLATIH";
+                motivation = "Jangan berkecil hati! Ulangi petualangan dan manfaatkan petunjuk hint untuk belajar.";
+            }
+
+            document.getElementById('resultPredicate').innerText = predicate;
+            document.getElementById('resultMotivation').innerText = `"${motivation}"`;
+        }
+
+        function saveReflection(e) {
+            e.preventDefault();
+            playSound('click');
+
+            const q1 = document.getElementById('refQ1').value.trim();
+            const q2 = document.getElementById('refQ2').value.trim();
+            const q3 = document.getElementById('refQ3').value.trim();
+
+            const record = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID'),
+                playerName: gameState.playerName,
+                score: gameState.score,
+                accuracy: Math.round((gameState.correctCount / gameState.currentQuestions.length) * 100),
+                predicate: document.getElementById('resultPredicate').innerText,
+                refQ1: q1,
+                refQ2: q2,
+                refQ3: q3
+            };
+
+            // Save to LocalStorage
+            let existing = JSON.parse(localStorage.getItem('nq_teacher_data') || '[]');
+            existing.push(record);
+            localStorage.setItem('nq_teacher_data', JSON.stringify(existing));
+
+            alert("Refleksi berhasil disimpan! Data dapat dilihat oleh Guru di Mode Guru.");
+        }
+
+        function openTeacherDashboard() {
+            playSound('click');
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameplayScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('teacherScreen').classList.remove('hidden');
+
+            renderTeacherData();
+        }
+
+        function renderTeacherData() {
+            const data = JSON.parse(localStorage.getItem('nq_teacher_data') || '[]');
+            
+            document.getElementById('tdTotalPlayers').innerText = data.length;
+
+            if (data.length === 0) {
+                document.getElementById('tdAvgScore').innerText = '0';
+                document.getElementById('tdAvgAccuracy').innerText = '0%';
+                document.getElementById('tdMastery').innerText = '0%';
+                document.getElementById('tdTableBody').innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Belum ada data permainan tersimpan.</td></tr>`;
+                return;
+            }
+
+            const totalScore = data.reduce((sum, item) => sum + item.score, 0);
+            const totalAcc = data.reduce((sum, item) => sum + item.accuracy, 0);
+            const masterCount = data.filter(item => item.accuracy >= 80).length;
+
+            document.getElementById('tdAvgScore').innerText = Math.round(totalScore / data.length);
+            document.getElementById('tdAvgAccuracy').innerText = `${Math.round(totalAcc / data.length)}%`;
+            document.getElementById('tdMastery').innerText = `${Math.round((masterCount / data.length) * 100)}%`;
+
+            // Table rendering
+            let rows = '';
+            data.reverse().forEach(item => {
+                rows += `
+                    <tr class="hover:bg-slate-900/50">
+                        <td class="p-3 font-semibold text-white">${item.playerName}</td>
+                        <td class="p-3 font-bold text-amber-400">${item.score}</td>
+                        <td class="p-3 font-bold text-emerald-400">${item.accuracy}%</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded bg-purple-900/50 text-purple-200 text-xs border border-purple-500/30">${item.predicate}</span></td>
+                        <td class="p-3 text-xs text-slate-300">
+                            <div><b>Paham:</b> ${item.refQ1}</div>
+                            <div><b>Kesulitan:</b> ${item.refQ3}</div>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('tdTableBody').innerHTML = rows;
+        }
+
+        function resetTeacherData() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh data rekap rekap rekap siswa kelas dari browser ini?")) {
+                localStorage.removeItem('nq_teacher_data');
+                renderTeacherData();
+                playSound('click');
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function showWelcomeScreen() {
+            playSound('click');
+            document.getElementById('gameplayScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('teacherScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function openInstructionsModal() {
+            playSound('click');
+            document.getElementById('instructionsModal').classList.remove('hidden');
+        }
+
+        function closeInstructionsModal() {
+            playSound('click');
+            document.getElementById('instructionsModal').classList.add('hidden');
+        }
+
+        function openAboutModal() {
+            playSound('click');
+            document.getElementById('aboutModal').classList.remove('hidden');
+        }
+
+        function closeAboutModal() {
+            playSound('click');
+            document.getElementById('aboutModal').classList.remove('hidden');
+            document.getElementById('aboutModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
